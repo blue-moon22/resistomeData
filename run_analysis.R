@@ -8,49 +8,50 @@ library(grid)
 library(stringr)
 library(dplyr)
 library(tidyr)
-
-#### Preprocessing - Merge bedtools and metaphlan2 outputs ####
-metadata_file <- "db/SAMPLES/metadata/supplementary_metadata.csv"
-card_dir <- "db/CARD_DB/card-data/"
-
-# Merge non-subsampled bedtools and KMA results data
-mapping_data_filenames <- list.files("db/MAPPING_DATA/NONSUBSAMPLED", full.names = TRUE)
-combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/nonsubsampled_merged_bedtools.csv", metadata_file, card_dir, subsampled = FALSE)
-
-# Merge subsampled saliva mapping data for percentage of ARG classes analysis
-mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_ALL", full.names = TRUE)
-combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_all_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
-
-# Merge subsampled saliva mapping data for percentage of ARG classes analysis
-mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_SALIVA", full.names = TRUE)
-combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_saliva_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
-
-# Merge subsampled dental mapping data for percentage of ARG classes analysis
-mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_DENTAL", full.names = TRUE)
-combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_dental_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
-
-# Merge subsampled stool mapping data for percentage of ARG classes analysis
-mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_STOOL", full.names = TRUE)
-combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_stool_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
-
-# Merge subsampled mapping data for ARG richness analysis (unique number of proteins coded)
-mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_ARGRICH", full.names = TRUE)
-combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_argrich_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
-
-# Merge CARD BLAST data
-blast_card_filenames <- list.files("db/ASSEMBLIES_ARGS/output_files", pattern = "card.out", full.name = TRUE)
-blast_card_output <- "db/ASSEMBLIES_ARGS/all_assemblies_card.csv"
-combineCARDBlast(blast_card_filenames, card_dir, metadata_file, blast_card_output)
-
-# MERGE PATRIC BLAST data
-blast_patric_filenames <- list.files("db/PATRIC_BLAST/output_files(prot)", pattern = ".out", full.names = TRUE)
-blast_patric_output <- "db/PATRIC_BLAST/all_patric_blast_filtered(prot).csv"
-header_prot <- read.delim("db/PATRIC_BLAST/headers/patric_phage_prot_headers.txt", stringsAsFactors = FALSE, header = FALSE)
-combinePATRICBlast(blast_patric_filenames, header_prot, metadata_file, blast_patric_output)
-
-# Merge metaphlan2 output
-taxa_filenames <- list.files("db/METAPHLAN/output_files", full.names = TRUE)
-combineMetaphlanSamples(taxa_filenames, output_file = "db/METAPHLAN/metaphlan.csv")
+library(DESeq2)
+library(metafor)
+# #### Preprocessing - Merge bedtools and metaphlan2 outputs ####
+# metadata_file <- "db/SAMPLES/metadata/supplementary_metadata.csv"
+# card_dir <- "db/CARD_DB/card-data/"
+#
+# # Merge non-subsampled bedtools and KMA results data
+# mapping_data_filenames <- list.files("db/MAPPING_DATA/NONSUBSAMPLED", full.names = TRUE)
+# combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/nonsubsampled_merged_bedtools.csv", metadata_file, card_dir, subsampled = FALSE)
+#
+# # Merge subsampled saliva mapping data for percentage of ARG classes analysis
+# mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_ALL", full.names = TRUE)
+# combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_all_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
+#
+# # Merge subsampled saliva mapping data for percentage of ARG classes analysis
+# mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_SALIVA", full.names = TRUE)
+# combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_saliva_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
+#
+# # Merge subsampled dental mapping data for percentage of ARG classes analysis
+# mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_DENTAL", full.names = TRUE)
+# combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_dental_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
+#
+# # Merge subsampled stool mapping data for percentage of ARG classes analysis
+# mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_STOOL", full.names = TRUE)
+# combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_stool_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
+#
+# # Merge subsampled mapping data for ARG richness analysis (unique number of proteins coded)
+# mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_ARGRICH", full.names = TRUE)
+# combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_argrich_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
+#
+# # Merge CARD BLAST data
+# blast_card_filenames <- list.files("db/ASSEMBLIES_ARGS/output_files", pattern = "card.out", full.name = TRUE)
+# blast_card_output <- "db/ASSEMBLIES_ARGS/all_assemblies_card.csv"
+# combineCARDBlast(blast_card_filenames, card_dir, metadata_file, blast_card_output)
+#
+# # MERGE PATRIC BLAST data
+# blast_patric_filenames <- list.files("db/PATRIC_BLAST/output_files(prot)", pattern = ".out", full.names = TRUE)
+# blast_patric_output <- "db/PATRIC_BLAST/all_patric_blast_filtered(prot).csv"
+# header_prot <- read.delim("db/PATRIC_BLAST/headers/patric_phage_prot_headers.txt", stringsAsFactors = FALSE, header = FALSE)
+# combinePATRICBlast(blast_patric_filenames, header_prot, metadata_file, blast_patric_output)
+#
+# # Merge metaphlan2 output
+# taxa_filenames <- list.files("db/METAPHLAN/output_files", full.names = TRUE)
+# combineMetaphlanSamples(taxa_filenames, output_file = "db/METAPHLAN/metaphlan.csv")
 
 #### Read mapping data ####
 # Read non-subsampled mapping data
@@ -131,6 +132,31 @@ plotPercentages(df_map_pb_stool_mech, cols) + xlab("ARG mechanism") + ylab("% st
   theme(axis.title=element_text(size=18), legend.text = element_text(size=14), legend.title = element_text(size=18))
 dev.off()
 
+#### Supplementary Figure 1 ####
+# Draw core ARGs for saliva samples
+tiff("figures/Supplementary_Figure1a.tiff", width=2800, height=2400, res=150)
+drawCoreARGs(df_map_sub_saliva, "saliva", c(0.5, rep(1, 5), 0.5, rep(0, 4)), bar_label_size = 3, group_label_size = 3.8)
+dev.off()
+
+# Draw core ARGs for dental samples
+tiff("figures/Supplementary_Figure1b.tiff", width=1600, height=1200, res=150)
+drawCoreARGs(df_map_sub_dental, "dental", c(0.5, rep(1, 4), 0.5, rep(0, 3)), bar_label_size = 2.5, group_label_size = 2.5)
+dev.off()
+
+# Draw core ARGs for stool samples
+tiff("figures/Supplementary_Figure1c.tiff", width=2500, height=2000, res=150)
+drawCoreARGs(df_map_sub_stool, "stool", c(0.5, rep(1, 5), 0.5, rep(0, 4)), bar_label_size = 3, group_label_size = 3)
+dev.off()
+
+#### Supplementary Figure 2 ####
+# Create dendrogram of US duplicates
+top_col <- rev(brewer.pal(8, "Spectral"))
+coloured_labels <- c("stool" = top_col[1], "dorsum of tongue" = top_col[2], "buccal mucosa" = top_col[3], "dental" = top_col[4])
+
+tiff(filename = "figures/Supplementary_Figure2.tiff", width = 3000, height = 3000, res = 200)
+createUSDendrogram(df_map_dup, coloured_labels)
+dev.off()
+
 #### Figure 2a ####
 # Run principle coordinate analysis
 mds <- runPrincipleCoordinateAnalysis(df_map_subsampled_all)
@@ -143,7 +169,7 @@ dev.off()
 
 #### Figure 2b ####
 # Calculate proportion of samples
-cluster_res <- mds %>% group_by(clusters, Location, sample_type) %>% summarise(n = n_distinct(ID)) %>%
+cluster_res <- mds %>% group_by(clusters, Location, sample_type) %>% summarise(n = n()) %>%
   group_by(clusters) %>%
   mutate(total_n = sum(n)) %>%
   mutate(prop_cluster = n/total_n*100, Location_sampletype = paste(sample_type, "-", Location))
@@ -158,27 +184,9 @@ ggplot(cluster_res, aes(clusters, prop_cluster, fill=Location_sampletype)) +
   theme_classic()
 dev.off()
 
-tiff("../Archive/pcoa_bistol_poster.tiff", width = 2000, height = 1000, res = 220)
-mds$Location_sampletype <- paste(mds$sample_type, "-", mds$Location)
-ggplot(mds, aes(V1, V2, colour = Location_sampletype)) +
-  geom_point(alpha = 0.6) +
-  xlab("PCo 1") + ylab("PCo 2") +
-  scale_colour_manual("Body Site - Geographical Location", values = cols) +
-  theme(panel.grid.major = element_blank(),
-        panel.grid.minor = element_blank(),
-        panel.background = element_blank(),
-        axis.line = element_line(colour = "black"),
-        axis.title = element_text(size=16),
-        legend.title = element_text(size=16),
-        legend.text = element_text(size=10))
-dev.off()
-
 #### Figure 2c ####
 # Read resistance map use data
 rm_use_card <- readResistanceMapUseData("db/ResistanceMap/resistanceMap_use_190221.csv")
-
-# Merge percentages data for saliva and dental classes
-# data_merge <- mergeData(list(saliva = df_map_pb_saliva_class, dental = df_map_pb_dental_class, stool = df_map_pb_stool_class), rm_use_card)
 
 df_map_unnest <- df_map %>%
   mutate(Drug.Class = strsplit(Drug.Class, ";")) %>%
@@ -188,9 +196,6 @@ df_map_use <- df_map_unnest %>% group_by(Location, sample_type, Drug.Class) %>%
   summarise(average_rpkm = sum(rpkm)/length(rpkm), std_error = sqrt(var(rpkm)/length(rpkm))) %>%
   left_join(rm_use_card, by = c("Location", "Drug.Class" = "class")) %>%
   filter(!is.na(sum.DDD.Per.1000.Pop))
-
-# df_map_use <- left_join(df_map_unnest, rm_use_card, by = c("Location", "Drug.Class" = "class"))
-# df_map_use <- df_map_use[!is.na(df_map_use$sum.DDD.Per.1000.Pop),]
 
 cols <- brewer.pal(length(unique(df_map_use$Drug.Class)), "Paired")
 names(cols) <- unique(df_map_use$Drug.Class)
@@ -234,24 +239,6 @@ write.csv(linearMods, "db/ResistanceMap/linear_regression_results.csv", row.name
 g[[length(g)+1]] <- g_legend(plotUseGraph(df_map_use, "", cols, shape_values) +
                                theme(legend.title = element_text(size=16), legend.text = element_text(size=12)))
 
-# Get class colours and shape of points
-# cols <- brewer.pal(length(unique(data_merge$class)), "Paired")
-# names(cols) <- unique(data_merge$class)
-# shape_values <- c(1,2,4)
-# names(shape_values) <- unique(data_merge$sample_type)
-
-# # Create graphs
-# locations <- unique(data_merge$Location)
-# g <- list()
-# for(i in 1:length(locations)){
-#   g[[i]] <- plotGraph(data_merge, locations[i], cols, shape_values) +
-#     theme(legend.position = "none", axis.title.y = element_text(size=14), plot.title = element_text(size=18))
-# }
-
-# # Add legend to grob list
-# g[[length(g)+1]] <- g_legend(plotGraph(data_merge, unique(data_merge$Location), cols, shape_values) +
-#                                theme(legend.title = element_text(size=16), legend.text = element_text(size=12)))
-
 # Generate figure
 tiff("figures/Figure2c.tiff", width = 1500, height = 750, res = 140)
 grid.arrange(grobs = g, layout_matrix = rbind(c(1,2,5),c(3,4,5)))
@@ -287,6 +274,12 @@ tiff("figures/Figure3a.tiff", width = 1800, height = 1500, res = 230)
 grid.arrange(grobs = stool_comp_graphs, layout_matrix = lay)
 dev.off()
 
+#### Supplementary Figure 3 ####
+oral_comp_graphs <- plotMultipleRPKM(df_map_pairs[df_map_pairs$group_mod %in% c("dorsum of tongue \nvs. buccal mucosa", "dorsum of tongue \nvs. dental", "buccal mucosa \nvs. dental"),])
+tiff("figures/Supplementary_Figure3.tiff", width = 1800, height = 500, res = 200)
+grid.arrange(grobs = oral_comp_graphs, nrow = 1)
+dev.off()
+
 #### Figure 3b ####
 # Get relative abundance for each country and sample type with more than one sample type
 df_map_rel <- getRelativeAbundance(df_map[df_map$Location %in% c("China", "US", "Fiji", "Western Europe"),])
@@ -306,240 +299,6 @@ g[[length(g)+1]] <- g_legend(plotARGClassAbundance(df_map_rel, cols) + theme(leg
 lay <- rbind(c(1, 2, 4), c(3, 5, 5))
 tiff("figures/Figure3b.tiff", width = 2800, height = 2000, res = 250)
 grid.arrange(grobs = g, layout_matrix = lay)
-dev.off()
-
-#### Figure 3c ####
-list_deseq <- list(China = list(sample_type = c("saliva", "stool", "dental")),
-                   US = list(sample_type = c("stool", "buccal mucosa", "dorsum of tongue", "dental")),
-                   "Western Europe" = list(sample_type = c("saliva", "stool")),
-                   Fiji = list(sample_type = c("saliva", "stool")))
-
-# DeSeq2 analysis through each comparison
-results_list <- list()
-name <- list()
-sample_comps <- list()
-dds_list <- list()
-count <- 0
-for(i in 1:length(list_deseq)){
-  for(k in 1:(length(list_deseq[[i]]$sample_type)-1)){
-    for(l in (k+1):length(list_deseq[[i]]$sample_type)){
-      count = count + 1
-      deseq_output <- runDESeq2(df_map[df_map$Location %in% c("China", "US", "Western Europe", "Fiji"),], Location = names(list_deseq[i]),
-                                compare_samples = c(list_deseq[[i]]$sample_type[k], list_deseq[[i]]$sample_type[l]))
-      results_list[[count]] <- deseq_output$results
-      sample_comps[[count]] <- deseq_output$sample_comparison
-      name[[count]] <- paste(names(list_deseq[i]), list_deseq[[i]]$sample_type[k], list_deseq[[i]]$sample_type[l], sep= "_")
-      dds_list[[count]] <- deseq_output$dds
-    }
-  }
-}
-
-# Meta-analysis
-library(DESeq2)
-library(metafor)
-library(purrr)
-
-randomEffectModel <- function(results_list, sample_comps, name, dds_list, group){
-  # Get shared differentially abundant genes between stool and oral
-  shrd_gn <- Reduce(intersect, sapply(results_list[grep(group, sample_comps)], function(x) row.names(x)[x$padj < 0.05 & !is.na(x$padj)]))
-
-  # Get effect sizes and variances to oral and stool comparisons
-  meta_val <- list()
-  for (i in 1:length(shrd_gn)){
-
-    meta_val[[i]] <- map_df(.x=grep(group, sample_comps), function(.x) {
-      results <- results_list[[.x]]
-      dds <- dds_list[[.x]]
-      norm_counts <- counts(dds, normalized=TRUE)
-
-      variance <- 1/mean(norm_counts[rownames(norm_counts) == shrd_gn[i],]) + dispersions(dds)[row.names(results) == shrd_gn[i]]
-      effct_sz <- results$log2FoldChange[row.names(results) == shrd_gn[i]]
-      comparison <- name[.x]
-      valence <- ifelse(effct_sz > 0, "pos", "neg")
-      return(c(variance = variance, effct_sz = effct_sz, comparison = comparison, valence = valence))
-    })
-  }
-
-  # Run random-effect model
-  res <- lapply(meta_val, function(x) rma(yi=effct_sz, vi=variance, data=x, method = "REML"))
-  names(res) <- shrd_gn
-  res <- res[sapply(res, function(x) x$pval < 0.05)]
-  res_df <- as.data.frame(t(map_df(res, function(x) c(estimate = as.numeric(x$b), ci.lb = x$ci.lb, ci.ub = x$ci.ub))))
-  names(res_df) <- c("estimate", "ci.lb", "ci.ub")
-  res_df$ARG <- row.names(res_df)
-
-  return(res_df)
-}
-
-stool_saliva_res <- randomEffectModel(results_list, sample_comps, name, dds_list, "stool_vs_saliva")
-stool_dental_res <- randomEffectModel(results_list, sample_comps, name, dds_list, "stool_vs_dental")
-
-## Plot results
-
-stool_saliva_res$sample_type <- ifelse(stool_saliva_res$estimate < 0, "saliva", "stool")
-stool_saliva_res$ARG <- gsub("part_of.*", "part of efflux pump complex]", stool_saliva_res$ARG)
-stool_saliva_res$ARG <- gsub("regulates.*", "regulates efflux pump]", stool_saliva_res$ARG)
-stool_saliva_res$comparison <- "saliva vs. stool"
-
-stool_dental_res$sample_type <- ifelse(stool_dental_res$estimate < 0, "dental", "stool")
-stool_dental_res$ARG <- gsub("part_of.*", "part of efflux pump complex]", stool_dental_res$ARG)
-stool_dental_res$ARG <- gsub("regulates.*", "regulates efflux pump]", stool_dental_res$ARG)
-stool_dental_res$comparison <- "dental vs. stool"
-
-all_res <- rbind(stool_saliva_res, stool_dental_res)
-
-tiff("figures/Figure3c.tiff", width = 2800, height = 1500, res = 250)
-ggplot(all_res, aes(ARG, abs(estimate), colour = sample_type)) +
-  geom_point() +
-  geom_errorbar(aes(ARG, ymin=abs(ci.lb), ymax = abs(ci.ub))) +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 80, hjust = 1)) +
-  ylab("Estimated average log2 fold change") +
-  scale_colour_manual("Sample Type", values = brewer.pal(3,"Dark2")) +
-  facet_grid(~comparison, scale = "free", space = "free")
-dev.off()
-
-#### Figure 4 ####
-metadata <- read.csv(metadata_file, stringsAsFactors = FALSE)
-
-# Remove longitudinal metadata
-metadata <- metadata[metadata$Visit_Number== 1,]
-
-metadata_pairs <- data.frame()
-for(i in 1:length(pair_list)){
-  samples_one <- unique(metadata$Sample.name[metadata$sample_type == pair_list[[i]][1]])
-  samples_two <- unique(metadata$Sample.name[metadata$sample_type == pair_list[[i]][2]])
-  metadata_pair <- metadata[(metadata$Sample.name %in% Reduce(intersect,list(samples_one, samples_two))) & (metadata$sample_type %in% pair_list[[i]]),]
-
-  metadata_pair <- cbind(metadata_pair, group = paste(pair_list[[i]][1], "vs.", pair_list[[i]][2]))
-  metadata_pairs <- rbind(metadata_pairs, metadata_pair)
-}
-
-# Find lowest sequence number per group for subsampling (for Arg richness)
-options(scipen=999)
-subsample_summary <- metadata_pairs %>%
-  filter(seq_num > 1) %>%
-  group_by(Location, group) %>%
-  summarise(num = n_distinct(ID), seq_num.x = signif(floor(min(seq_num)/0.1)*0.1, 2)*1e6) %>%
-  mutate(sample_type = strsplit(as.character(group), " vs. ")) %>%
-  unnest(sample_type) %>%
-  mutate_if(is.factor, as.character)
-
-
-# Create dataset of paired samples with efflux pumps
-df_map_subsampled_argrich_pairs <- left_join(df_map_subsampled_argrich, subsample_summary, by = c("Location", "seq_num.x", "sample_type"))
-sample_pairs_summary <- df_map_subsampled_argrich_pairs %>%
-  group_by(Location, group, sample_type, Sample.name) %>%
-  summarise(n = n_distinct(Sample.name)) %>%
-  group_by(Location, group, Sample.name) %>%
-  summarise(total_n = sum(n))
-df_map_subsampled_argrich_pairs <- left_join(df_map_subsampled_argrich_pairs, sample_pairs_summary, by = c("Location", "group", "Sample.name")) %>%
-  filter(total_n == 2)
-
-summ <- df_map_subsampled_argrich_pairs %>%
-  group_by(Location, group, sample_type, seq_num.x) %>%
-  summarise(n = n_distinct(Sample.name))
-
-# Run t-test
-ttest_groups <- runTtest(df_map_subsampled_argrich_pairs)
-
-# Plot boxplots which includes comparison with stool
-graphs_comp <- plotMultipleARGRichnessGraphs(ttest_groups, df_map_subsampled_argrich_pairs)
-lay <- rbind(c(1,2,3,4), c(5,6,7,8), c(9,10,11,NA))
-tiff("figures/Figure4.tiff", width = 2100, height = 1500, res = 200)
-grid.arrange(grobs = graphs_comp, layout_matrix = lay)
-dev.off()
-
-#### Figure 5a ####
-# Combine metaphlan and rpkm for each sample
-metaphlan <- read.csv("db/METAPHLAN/metaphlan.csv", stringsAsFactors = FALSE, row.names = 1)
-metaphlan_rpkm <- combineMetaphlanandARG(df_map, metaphlan)
-
-# Chinese healthy saliva with paired stool
-china_sample_ids <- Reduce(intersect, list(unique(df_map$Sample.name[df_map$Location == "China" & df_map$sample_type == "saliva"]),
-                                     unique(df_map$Sample.name[df_map$Location == "China" & df_map$sample_type == "stool"])))
-
-
-# Get spearman's correlation
-high_cor_china_saliva <- getSpearmanCorrelation(metaphlan_rpkm, ids = unique(df_map$ID[df_map$Sample.name %in% china_sample_ids & df_map$sample_type == "saliva"]), taxon_level = "t", taxon_ignore = "@@@")
-
-# Plot heatmap
-phyla <- c("Firmicutes", "Actinobacteria", "Proteobacteria", "Bacteroidetes", "Candidatus_Saccharibacteria", "Fusobacteria", "Spirochaetes",
-            "Verrucomicrobia", "Ascomycota", "Synergistetes")
-tiff("figures/Figure5a.tiff", width = 4500, height = 3500, res = 400)
-drawCorrelationHeatmap(high_cor_china_saliva[high_cor_china_saliva$phylum %in% phyla,], 150, phyla = phyla, left_margin = 60)
-dev.off()
-
-#### Figure 5b ####
-# Spearman's correlation of Philippines saliva
-high_cor_philippines_saliva <- getSpearmanCorrelation(metaphlan_rpkm, ids = unique(df_map$ID[df_map$Location == "Philippines" & df_map$sample_type == "saliva"]), taxon_level = "t", taxon_ignore = "@@@")
-
-# Plot heatmap
-tiff("figures/Figure5b.tiff", width = 3500, height = 2300, res = 300)
-drawCorrelationHeatmap(high_cor_philippines_saliva[high_cor_philippines_saliva$phylum %in% phyla,], 150, phyla = phyla, left_margin = 60)
-dev.off()
-
-#### Supplementary Figure 1 ####
-# Draw core ARGs for saliva samples
-tiff("figures/Supplementary_Figure1a.tiff", width=2800, height=2400, res=150)
-drawCoreARGs(df_map_sub_saliva, "saliva", c(0.5, rep(1, 5), 0.5, rep(0, 4)), bar_label_size = 3, group_label_size = 3.8)
-dev.off()
-
-# Draw core ARGs for dental samples
-tiff("figures/Supplementary_Figure1b.tiff", width=1600, height=1200, res=150)
-drawCoreARGs(df_map_sub_dental, "dental", c(0.5, rep(1, 4), 0.5, rep(0, 3)), bar_label_size = 2.5, group_label_size = 2.5)
-dev.off()
-
-# Draw core ARGs for stool samples
-tiff("figures/Supplementary_Figure1c.tiff", width=2500, height=2000, res=150)
-drawCoreARGs(df_map_sub_stool, "stool", c(0.5, rep(1, 5), 0.5, rep(0, 4)), bar_label_size = 3, group_label_size = 3)
-dev.off()
-
-# #### Supplementary Figure 2 ####
-# # Read card blastn
-# args_data <- read.csv("db/ASSEMBLIES_ARGS/all_assemblies_card.csv", stringsAsFactors = FALSE)
-#
-# # Read phages data
-# phages_data <- read.csv("db/PATRIC_BLAST/all_patric_blast_filtered(prot).csv", stringsAsFactors = FALSE)
-#
-# # Process phage data
-# phage_contigs <- phages_data %>% group_by(ID, qseqid_mod) %>% summarise(num_contigs = n_distinct(qseqid))
-# phages_data_filt <- left_join(phages_data, phage_contigs, by = c("ID", "qseqid_mod")) %>% filter(num_contigs >= 5)
-# phages_data_filt$phage <- gsub(" phage.*", "", phages_data_filt$phage)
-# phages_data_filt$phage[grep("Stx", phages_data_filt$phage)] <- "Shiga-toxin-producing Escherichia coli"
-# phages_data_filt$phage[grep("O157", phages_data_filt$phage)] <- "Escherichia coli"
-# phages_data_merge <- phages_data_filt %>% group_by(Location, sample_type, ID, qseqid_mod, phage) %>% summarise(n_phages = n()) %>%
-#   group_by(Location, sample_type, ID, qseqid_mod) %>% mutate(phage = phage[which.max(n_phages)])
-# phages_args_pairs <- combineARGsAndPhages(phages_data_merge, args_data, 0)
-# phages_args_pairs$Drug.Class[sapply(phages_args_pairs$Drug.Class, function(x) str_count(x, ";")) > 2] <- "multidrug class"
-#
-# # Create drug class colours
-# class_names <- unique(phages_args_pairs$Drug.Class)
-# n <- length(class_names)
-# qual_col_pals = brewer.pal.info[brewer.pal.info$category == 'qual',]
-# class_colours = c("#6b6c6d", rev(unlist(mapply(brewer.pal, qual_col_pals$maxcolors, rownames(qual_col_pals)))))
-# names(class_colours) <- class_names
-# class_colours <- class_colours[!is.na(names(class_colours))]
-#
-# # Plot
-# tiff("figures/Supplementary_Figure2.tiff", width = 5000, height = 2500, res = 250)
-# plotARGPhage(phages_args_pairs, class_colours) +
-#   facet_grid(Location + sample_type + phage~., scales = "free", space = "free", switch = "y")
-# dev.off()
-
-#### Supplementary Figure 2 ####
-# Create dendrogram of US duplicates
-top_col <- rev(brewer.pal(8, "Spectral"))
-coloured_labels <- c("stool" = top_col[1], "dorsum of tongue" = top_col[2], "buccal mucosa" = top_col[3], "dental" = top_col[4])
-
-tiff(filename = "figures/Supplementary_Figure2.tiff", width = 3000, height = 3000, res = 200)
-createUSDendrogram(df_map_dup, coloured_labels)
-dev.off()
-
-#### Supplementary Figure 3 ####
-oral_comp_graphs <- plotMultipleRPKM(df_map_pairs[df_map_pairs$group_mod %in% c("dorsum of tongue \nvs. buccal mucosa", "dorsum of tongue \nvs. dental", "buccal mucosa \nvs. dental"),])
-tiff("figures/Supplementary_Figure3.tiff", width = 1800, height = 500, res = 200)
-grid.arrange(grobs = oral_comp_graphs, nrow = 1)
 dev.off()
 
 #### Supplementary Figure 4 ####
@@ -602,6 +361,31 @@ createRPKMHeatmap(df_map, "Western Europe", col_vector)
 dev.off()
 
 #### Supplementary Figure 6 ####
+list_deseq <- list(China = list(sample_type = c("saliva", "stool", "dental")),
+                   US = list(sample_type = c("stool", "buccal mucosa", "dorsum of tongue", "dental")),
+                   "Western Europe" = list(sample_type = c("saliva", "stool")),
+                   Fiji = list(sample_type = c("saliva", "stool")))
+
+# DeSeq2 analysis through each comparison
+results_list <- list()
+name <- list()
+sample_comps <- list()
+dds_list <- list()
+count <- 0
+for(i in 1:length(list_deseq)){
+  for(k in 1:(length(list_deseq[[i]]$sample_type)-1)){
+    for(l in (k+1):length(list_deseq[[i]]$sample_type)){
+      count = count + 1
+      deseq_output <- runDESeq2(df_map[df_map$Location %in% c("China", "US", "Western Europe", "Fiji"),], Location = names(list_deseq[i]),
+                                compare_samples = c(list_deseq[[i]]$sample_type[k], list_deseq[[i]]$sample_type[l]))
+      results_list[[count]] <- deseq_output$results
+      sample_comps[[count]] <- deseq_output$sample_comparison
+      name[[count]] <- paste(names(list_deseq[i]), list_deseq[[i]]$sample_type[k], list_deseq[[i]]$sample_type[l], sep= "_")
+      dds_list[[count]] <- deseq_output$dds
+    }
+  }
+}
+
 # Create volcano plots
 class_names <- unique(df_map$Drug.Class_mod)
 n <- length(class_names)
@@ -632,7 +416,69 @@ tiff("figures/Supplementary_Figure6.tiff", width = 4000, height = 5000, res = 10
 grid.arrange(grobs = p, layout_matrix = lay)
 dev.off()
 
-####Supplementary Figure 7 ####
+#### Figure 3c ####
+
+# Meta-analysis
+randomEffectModel <- function(results_list, sample_comps, name, dds_list, group){
+  # Get shared differentially abundant genes between stool and oral
+  shrd_gn <- Reduce(intersect, sapply(results_list[grep(group, sample_comps)], function(x) row.names(x)[x$padj < 0.05 & !is.na(x$padj)]))
+
+  # Get effect sizes and variances to oral and stool comparisons
+  meta_val <- list()
+  for (i in 1:length(shrd_gn)){
+
+    meta_val[[i]] <- map_df(.x=grep(group, sample_comps), function(.x) {
+      results <- results_list[[.x]]
+      dds <- dds_list[[.x]]
+      norm_counts <- counts(dds, normalized=TRUE)
+
+      variance <- 1/mean(norm_counts[rownames(norm_counts) == shrd_gn[i],]) + dispersions(dds)[row.names(results) == shrd_gn[i]]
+      effct_sz <- results$log2FoldChange[row.names(results) == shrd_gn[i]]
+      comparison <- name[.x]
+      valence <- ifelse(effct_sz > 0, "pos", "neg")
+      return(c(variance = variance, effct_sz = effct_sz, comparison = comparison, valence = valence))
+    })
+  }
+
+  # Run random-effect model
+  res <- lapply(meta_val, function(x) rma(yi=effct_sz, vi=variance, data=x, method = "REML"))
+  names(res) <- shrd_gn
+  res <- res[sapply(res, function(x) x$pval < 0.05)]
+  res_df <- as.data.frame(t(map_df(res, function(x) c(estimate = as.numeric(x$b), ci.lb = x$ci.lb, ci.ub = x$ci.ub))))
+  names(res_df) <- c("estimate", "ci.lb", "ci.ub")
+  res_df$ARG <- row.names(res_df)
+
+  return(res_df)
+}
+
+stool_saliva_res <- randomEffectModel(results_list, sample_comps, name, dds_list, "stool vs saliva")
+stool_dental_res <- randomEffectModel(results_list, sample_comps, name, dds_list, "stool vs dental")
+
+## Plot results
+stool_saliva_res$sample_type <- ifelse(stool_saliva_res$estimate < 0, "saliva", "stool")
+stool_saliva_res$ARG <- gsub("part_of.*", "part of efflux pump complex]", stool_saliva_res$ARG)
+stool_saliva_res$ARG <- gsub("regulates.*", "regulates efflux pump]", stool_saliva_res$ARG)
+stool_saliva_res$comparison <- "saliva vs. stool"
+
+stool_dental_res$sample_type <- ifelse(stool_dental_res$estimate < 0, "dental", "stool")
+stool_dental_res$ARG <- gsub("part_of.*", "part of efflux pump complex]", stool_dental_res$ARG)
+stool_dental_res$ARG <- gsub("regulates.*", "regulates efflux pump]", stool_dental_res$ARG)
+stool_dental_res$comparison <- "dental vs. stool"
+
+all_res <- rbind(stool_saliva_res, stool_dental_res)
+
+tiff("figures/Figure3c.tiff", width = 2800, height = 1500, res = 250)
+ggplot(all_res, aes(ARG, abs(estimate), colour = sample_type)) +
+  geom_point() +
+  geom_errorbar(aes(ARG, ymin=abs(ci.lb), ymax = abs(ci.ub))) +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 80, hjust = 1)) +
+  ylab("Estimated average log2 fold change") +
+  scale_colour_manual("Sample Type", values = brewer.pal(3,"Dark2")) +
+  facet_grid(~comparison, scale = "free", space = "free")
+dev.off()
+
+#### Supplementary Figure 7 ####
 # Get ARGs found exclusively in countries
 stool_saliva_exclusive_args <- map_df(.x = grep("stool vs saliva", sample_comps), function(.x) data.frame(results_list[[.x]][results_list[[.x]]$padj < 0.05 & !is.na(results_list[[.x]]$padj),],
                                                                                                           ARG = row.names(results_list[[.x]])[results_list[[.x]]$padj < 0.05 & !is.na(results_list[[.x]]$padj)],
@@ -664,6 +510,58 @@ ggplot(stool_saliva_dental_excl, aes(ARG, abs(log2FoldChange), colour = sample_t
   facet_grid(~comparison, scale = "free", space = "free")
 dev.off()
 
+#### Figure 4 ####
+metadata_file <- "db/SAMPLES/metadata/supplementary_metadata.csv"
+metadata <- read.csv(metadata_file, stringsAsFactors = FALSE)
+
+# Remove longitudinal metadata
+metadata <- metadata[metadata$Visit_Number== 1,]
+
+metadata_pairs <- data.frame()
+for(i in 1:length(pair_list)){
+  samples_one <- unique(metadata$Sample.name[metadata$sample_type == pair_list[[i]][1]])
+  samples_two <- unique(metadata$Sample.name[metadata$sample_type == pair_list[[i]][2]])
+  metadata_pair <- metadata[(metadata$Sample.name %in% Reduce(intersect,list(samples_one, samples_two))) & (metadata$sample_type %in% pair_list[[i]]),]
+
+  metadata_pair <- cbind(metadata_pair, group = paste(pair_list[[i]][1], "vs.", pair_list[[i]][2]))
+  metadata_pairs <- rbind(metadata_pairs, metadata_pair)
+}
+
+# Find lowest sequence number per group for subsampling (for Arg richness)
+options(scipen=999)
+subsample_summary <- metadata_pairs %>%
+  filter(seq_num > 1) %>%
+  group_by(Location, group) %>%
+  summarise(num = n_distinct(ID), seq_num.x = signif(floor(min(seq_num)/0.1)*0.1, 2)*1e6) %>%
+  mutate(sample_type = strsplit(as.character(group), " vs. ")) %>%
+  unnest(sample_type) %>%
+  mutate_if(is.factor, as.character)
+
+
+# Create dataset of paired samples with efflux pumps
+df_map_subsampled_argrich_pairs <- left_join(df_map_subsampled_argrich, subsample_summary, by = c("Location", "seq_num.x", "sample_type"))
+sample_pairs_summary <- df_map_subsampled_argrich_pairs %>%
+  group_by(Location, group, sample_type, Sample.name) %>%
+  summarise(n = n_distinct(Sample.name)) %>%
+  group_by(Location, group, Sample.name) %>%
+  summarise(total_n = sum(n))
+df_map_subsampled_argrich_pairs <- left_join(df_map_subsampled_argrich_pairs, sample_pairs_summary, by = c("Location", "group", "Sample.name")) %>%
+  filter(total_n == 2)
+
+summ <- df_map_subsampled_argrich_pairs %>%
+  group_by(Location, group, sample_type, seq_num.x) %>%
+  summarise(n = n_distinct(Sample.name))
+
+# Run t-test
+ttest_groups <- runTtest(df_map_subsampled_argrich_pairs)
+
+# Plot boxplots which includes comparison with stool
+graphs_comp <- plotMultipleARGRichnessGraphs(ttest_groups, df_map_subsampled_argrich_pairs)
+lay <- rbind(c(1,2,3,4), c(5,6,7,8), c(9,10,11,NA))
+tiff("figures/Figure4.tiff", width = 2100, height = 1500, res = 200)
+grid.arrange(grobs = graphs_comp, layout_matrix = lay)
+dev.off()
+
 #### Supplementary Figure 8 ####
 # Create dataset of paired samples without efflux pumps
 df_map_subsampled_argrich_pairs_noefflux <- df_map_subsampled_argrich_pairs[is.na(df_map_subsampled_argrich_pairs$Multi.Efflux.Role),]
@@ -686,6 +584,35 @@ tiff("figures/Supplementary_Figure8.tiff", width = 2100, height = 1500, res = 20
 grid.arrange(grobs = graphs_comp_noefflux, layout_matrix = lay)
 dev.off()
 
+#### Figure 5a ####
+# Combine metaphlan and rpkm for each sample
+metaphlan <- read.csv("db/METAPHLAN/metaphlan.csv", stringsAsFactors = FALSE, row.names = 1)
+metaphlan_rpkm <- combineMetaphlanandARG(df_map, metaphlan)
+
+# Chinese healthy saliva with paired stool
+china_sample_ids <- Reduce(intersect, list(unique(df_map$Sample.name[df_map$Location == "China" & df_map$sample_type == "saliva"]),
+                                     unique(df_map$Sample.name[df_map$Location == "China" & df_map$sample_type == "stool"])))
+
+
+# Get spearman's correlation
+high_cor_china_saliva <- getSpearmanCorrelation(metaphlan_rpkm, ids = unique(df_map$ID[df_map$Sample.name %in% china_sample_ids & df_map$sample_type == "saliva"]), taxon_level = "t", taxon_ignore = "@@@")
+
+# Plot heatmap
+phyla <- c("Firmicutes", "Actinobacteria", "Proteobacteria", "Bacteroidetes", "Candidatus_Saccharibacteria", "Fusobacteria", "Spirochaetes",
+            "Verrucomicrobia", "Ascomycota", "Synergistetes")
+tiff("figures/Figure5a.tiff", width = 4500, height = 3500, res = 400)
+drawCorrelationHeatmap(high_cor_china_saliva[high_cor_china_saliva$phylum %in% phyla,], 150, phyla = phyla, left_margin = 60)
+dev.off()
+
+#### Figure 5b ####
+# Spearman's correlation of Philippines saliva
+high_cor_philippines_saliva <- getSpearmanCorrelation(metaphlan_rpkm, ids = unique(df_map$ID[df_map$Location == "Philippines" & df_map$sample_type == "saliva"]), taxon_level = "t", taxon_ignore = "@@@")
+
+# Plot heatmap
+tiff("figures/Figure5b.tiff", width = 3500, height = 2300, res = 300)
+drawCorrelationHeatmap(high_cor_philippines_saliva[high_cor_philippines_saliva$phylum %in% phyla,], 150, phyla = phyla, left_margin = 60)
+dev.off()
+
 #### Supplementary Figure 9 ####
 # Get spearman's correlation
 high_cor_china_stool <- getSpearmanCorrelation(metaphlan_rpkm, ids = unique(df_map$ID[df_map$Sample.name %in% china_sample_ids & df_map$sample_type == "stool"]), taxon_level = "t", taxon_ignore = "@@@")
@@ -695,88 +622,3 @@ tiff("figures/Supplementary_Figure9.tiff", width = 5000, height = 5000, res = 40
 drawCorrelationHeatmap(high_cor_china_stool[high_cor_china_stool$phylum %in% phyla,], 150, 200, phyla = phyla)
 dev.off()
 
-#### Supplementary Figure 10 ####
-
-# Function to read mapping file
-readFile <- function(filename, header){
-  data <- read.delim(filename, header = header, stringsAsFactors = F)
-  data$filename <- filename
-  return(data)
-}
-
-metadata <- read.csv("db/SAMPLES/metadata/supplementary_metadata.csv", stringsAsFactors = F)
-
-# Create alternative sample type of oral and stool
-metadata$sample_type_mod <- ifelse(metadata$sample_type == "stool", "stool", "oral")
-
-#### CARD data ####
-card_dir <- "db/CARD_DB/card-data/"
-aro_index <- read.delim(paste0(card_dir, "aro_index.csv"), stringsAsFactors = F)
-aro_categories_index <- read.delim(paste0(card_dir, "aro_categories_index.csv"), stringsAsFactors = F)
-aro_index <- left_join(aro_index, aro_categories_index, by = "Protein.Accession")
-efflux_mech <- read.csv(paste0(card_dir, "efflux_mechanism.csv"), stringsAsFactors = FALSE)
-aro_index <- left_join(aro_index, efflux_mech, by = c("ARO.Accession", "ARO.Name"))
-aro_index$ARO <- sapply(aro_index$ARO.Accession, function(x) gsub("ARO:", "", x))
-
-# Fill in the gaps
-if (sum(aro_index$ARO == "3002670" & is.na(aro_index$Resistance.Mechanism)) > 0) {
-  aro_index$AMR.Gene.Family[aro_index$ARO == "3002670" & is.na(aro_index$Resistance.Mechanism)] <- "chloramphenicol acetyltransferase (CAT)"
-  aro_index$Drug.Class[aro_index$ARO == "3002670" & is.na(aro_index$Resistance.Mechanism)] <- "phenicol antibiotic"
-  aro_index$ARO.Name[aro_index$ARO == "3002670" & is.na(aro_index$Resistance.Mechanism)] <- "cat"
-  aro_index$Resistance.Mechanism[aro_index$ARO == "3002670" & is.na(aro_index$Resistance.Mechanism)] <- "antibiotic inactivation"
-}
-
-# Add drug class efflux
-aro_index$Drug.Class.Efflux <- aro_index$Drug.Class
-aro_index$Drug.Class.Efflux[aro_index$Resistance.Mechanism == "antibiotic efflux"] <- paste(aro_index$Drug.Class.Efflux[aro_index$Resistance.Mechanism == "antibiotic efflux"], "(efflux pump)")
-aro_index$ARO.Name[!is.na(aro_index$Multi.Efflux.Pump)] <- paste0(aro_index$ARO.Name[!is.na(aro_index$Multi.Efflux.Pump)], " [", aro_index$Multi.Efflux.Role[!is.na(aro_index$Multi.Efflux.Pump)], " ", aro_index$Multi.Efflux.Pump[!is.na(aro_index$Multi.Efflux.Pump)], "]")
-aro_index$Prot[!is.na(aro_index$Multi.Efflux.Pump)] <- aro_index$Multi.Efflux.Pump[!is.na(aro_index$Multi.Efflux.Pump)]
-
-# Create alternative drug class colum where more than 3 ARG classes are multidrug
-countCharOccurrences <- function(char, s) {
-  s2 <- gsub(char,"",s)
-  return (nchar(s) - nchar(s2))
-}
-drug_class <- as.character(aro_index$Drug.Class)
-drug_class[as.logical(sapply(as.character(aro_index$Drug.Class), function(x) countCharOccurrences(";", x)) > 2)] <- "multidrug"
-aro_index$Drug.Class_mod <- drug_class
-
-#### Combine KMA results ####
-filenames_kma <- list.files("db/MAPPING_DATA/KMA", full.names = TRUE)
-df_kma <- map_df(filenames_kma, function(x) readFile(x, TRUE))
-
-# # Filter by coverage threshold
-# df_kma <- df_kma[df_kma$Template_Identity > coverage_threshold*100,]
-
-# Extract ARO
-df_kma$ARO <- gsub("\\|.*", "", gsub(".*ARO:", "", df_kma$X.Template))
-
-# Add IDs
-df_kma$ID <- gsub(".res", "", sapply(df_kma$filename, function(x) strsplit(x, "/")[[1]][length(strsplit(x, "/")[[1]])]))
-
-# Combine raw, metadata and aro_index
-df_kma <- left_join(metadata, df_kma, by = "ID")
-df_kma <- df_kma[!is.na(df_kma$ARO),]
-df_kma <- left_join(df_kma, aro_index, by = "ARO")
-
-df_kma$V1 <- gsub(" \\[.*", "", gsub("\\|", "_", df_kma$X.Template))
-df_kma <- df_kma[df_kma$ID %in% unique(args_data$ID),]
-args_data_red <- args_data[!duplicated(paste(args_data$ID, args_data$sseqid)),]
-args_data_red <- select(args_data_red, c("ID", "sseqid", "qseqid"))
-df_read_contig <- left_join(df_kma, args_data_red, by = c("ID", "V1" = "sseqid"))
-#df_read_contig <- df_read_contig[!is.na(df_read_contig$qseqid),]
-df_read_contig$status <- NA
-df_read_contig$status[!is.na(df_read_contig$Template_Coverage) & !is.na(df_read_contig$qseqid)] <- "ARG in assembly"
-df_read_contig$status[is.na(df_read_contig$qseqid)] <- "ARG not in assembly"
-
-df_read_contig$Location_sampletype <- paste(df_read_contig$Location, "-", df_read_contig$sample_type)
-tiff("figures/Supplementary_Figure10.tiff", height = 1000, width = 2000, res = 150)
-ggplot(df_read_contig, aes(Location_sampletype, Template_Coverage, fill = status)) +
-  geom_violin() +
-  ylab("% ARG coverage using KMA") +
-  xlab("") +
-  geom_hline(yintercept=90, linetype="dashed",color="red") +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle=90)) +
-  scale_y_continuous(breaks = seq(0, 100, 10))
-dev.off()
