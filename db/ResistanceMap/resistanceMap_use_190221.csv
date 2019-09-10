@@ -1,0 +1,66 @@
+Country,RM Class,Year,DDD Per 1000 Pop,CARD Class,Location
+China,Aminoglycosides,2015,44,aminoglycoside antibiotic,China
+China,Broad spectrum penicillins,2015,984,penam,China
+China,Carbapenems,2015,13,carbapenem,China
+China,Cephalosporins,2015,739,cephalosporin,China
+China,Chloramphenicols,2015,4,phenicol antibiotic,China
+China,Fluoroquinolones,2015,389,fluoroquinolone antibiotic,China
+China,Glycopeptides,2015,3,glycopeptide antibiotic,China
+China,Macrolides,2015,665,macrolide antibiotic,China
+China,Monobactams,2015,5,monobactam,China
+China,Narrow spectrum penicillins,2015,23,penam,China
+China,Tetracyclines,2015,169,tetracycline antibiotic,China
+China,Trimethoprim,2015,17,diaminopyrimidine antibiotic,China
+US,Aminoglycosides,2015,53,aminoglycoside antibiotic,US
+US,Broad spectrum penicillins,2015,4321,penam,US
+US,Carbapenems,2015,40,carbapenem,US
+US,Cephalosporins,2015,1070,cephalosporin,US
+US,Fluoroquinolones,2015,1002,fluoroquinolone antibiotic,US
+US,Glycopeptides,2015,73,glycopeptide antibiotic,US
+US,Glycylcyclines,2015,2,tetracycline antibiotic,US
+US,Lipopeptides,2015,18,peptide antibiotic,US
+US,Macrolides,2015,952,macrolide antibiotic,US
+US,Monobactams,2015,3,monobactam,US
+US,Narrow spectrum penicillins,2015,143,penam,US
+US,Oxazolidinones,2015,9,oxazolidinone antibiotic,US
+US,Polymyxins,2015,3,peptide antibiotic,US
+US,Tetracyclines,2015,1918,tetracycline antibiotic,US
+US,Trimethoprim,2015,676,diaminopyrimidine antibiotic,US
+Philippines,Aminoglycosides,2015,3,aminoglycoside antibiotic,Philippines
+Philippines,Broad spectrum penicillins,2015,1295,penam,Philippines
+Philippines,Carbapenems,2015,6,carbapenem,Philippines
+Philippines,Cephalosporins,2015,568,cephalosporin,Philippines
+Philippines,Chloramphenicols,2015,2,phenicol antibiotic,Philippines
+Philippines,Fluoroquinolones,2015,262,fluoroquinolone antibiotic,Philippines
+Philippines,Macrolides,2015,222,macrolide antibiotic,Philippines
+Philippines,Narrow spectrum penicillins,2015,93,penam,Philippines
+Philippines,Tetracyclines,2015,49,tetracycline antibiotic,Philippines
+Philippines,Trimethoprim,2015,85,diaminopyrimidine antibiotic,Philippines
+France,Aminoglycosides,2015,68,aminoglycoside antibiotic,Western Europe
+France,Broad spectrum penicillins,2015,8357,penam,Western Europe
+France,Carbapenems,2015,22,carbapenem,Western Europe
+France,Cephalosporins,2015,1004,cephalosporin,Western Europe
+France,Fluoroquinolones,2015,688,fluoroquinolone antibiotic,Western Europe
+France,Glycopeptides,2015,15,glycopeptide antibiotic,Western Europe
+France,Lipopeptides,2015,3,peptide antibiotic,Western Europe
+France,Macrolides,2015,1311,macrolide antibiotic,Western Europe
+France,Narrow spectrum penicillins,2015,165,penam,Western Europe
+France,Oxazolidinones,2015,5,oxazolidinone antibiotic,Western Europe
+France,Polymyxins,2015,9,peptide antibiotic,Western Europe
+France,Tetracyclines,2015,1225,tetracycline antibiotic,Western Europe
+France,Trimethoprim,2015,141,diaminopyrimidine antibiotic,Western Europe
+Germany,Aminoglycosides,2015,60,aminoglycoside antibiotic,Western Europe
+Germany,Broad spectrum penicillins,2015,2092,penam,Western Europe
+Germany,Carbapenems,2015,52,carbapenem,Western Europe
+Germany,Cephalosporins,2015,1680,cephalosporin,Western Europe
+Germany,Chloramphenicols,2015,0,phenicol antibiotic,Western Europe
+Germany,Fluoroquinolones,2015,701,fluoroquinolone antibiotic,Western Europe
+Germany,Glycopeptides,2015,18,glycopeptide antibiotic,Western Europe
+Germany,Glycylcyclines,2015,2,tetracycline antibiotic,Western Europe
+Germany,Lipopeptides,2015,2,peptide antibiotic,Western Europe
+Germany,Macrolides,2015,916,macrolide antibiotic,Western Europe
+Germany,Narrow spectrum penicillins,2015,248,penam,Western Europe
+Germany,Oxazolidinones,2015,9,oxazolidinone antibiotic,Western Europe
+Germany,Polymyxins,2015,5,peptide antibiotic,Western Europe
+Germany,Tetracyclines,2015,671,tetracycline antibiotic,Western Europe
+Germany,Trimethoprim,2015,187,diaminopyrimidine antibiotic,Western Europe
