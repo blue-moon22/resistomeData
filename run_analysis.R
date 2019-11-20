@@ -10,48 +10,7 @@ library(dplyr)
 library(tidyr)
 library(DESeq2)
 library(metafor)
-# #### Preprocessing - Merge bedtools and metaphlan2 outputs ####
-# metadata_file <- "db/SAMPLES/metadata/supplementary_metadata.csv"
-# card_dir <- "db/CARD_DB/card-data/"
-#
-# # Merge non-subsampled bedtools and KMA results data
-# mapping_data_filenames <- list.files("db/MAPPING_DATA/NONSUBSAMPLED", full.names = TRUE)
-# combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/nonsubsampled_merged_bedtools.csv", metadata_file, card_dir, subsampled = FALSE)
-#
-# # Merge subsampled saliva mapping data for percentage of ARG classes analysis
-# mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_ALL", full.names = TRUE)
-# combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_all_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
-#
-# # Merge subsampled saliva mapping data for percentage of ARG classes analysis
-# mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_SALIVA", full.names = TRUE)
-# combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_saliva_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
-#
-# # Merge subsampled dental mapping data for percentage of ARG classes analysis
-# mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_DENTAL", full.names = TRUE)
-# combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_dental_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
-#
-# # Merge subsampled stool mapping data for percentage of ARG classes analysis
-# mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_STOOL", full.names = TRUE)
-# combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_stool_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
-#
-# # Merge subsampled mapping data for ARG richness analysis (unique number of proteins coded)
-# mapping_data_filenames <- list.files("db/MAPPING_DATA/SUBSAMPLE_ARGRICH", full.names = TRUE)
-# combineBedtools(mapping_data_filenames, output_file = "db/MAPPING_DATA/subsampled_argrich_merged_bedtools.csv", metadata_file, card_dir, subsampled = TRUE)
-#
-# # Merge CARD BLAST data
-# blast_card_filenames <- list.files("db/ASSEMBLIES_ARGS/output_files", pattern = "card.out", full.name = TRUE)
-# blast_card_output <- "db/ASSEMBLIES_ARGS/all_assemblies_card.csv"
-# combineCARDBlast(blast_card_filenames, card_dir, metadata_file, blast_card_output)
-#
-# # MERGE PATRIC BLAST data
-# blast_patric_filenames <- list.files("db/PATRIC_BLAST/output_files(prot)", pattern = ".out", full.names = TRUE)
-# blast_patric_output <- "db/PATRIC_BLAST/all_patric_blast_filtered(prot).csv"
-# header_prot <- read.delim("db/PATRIC_BLAST/headers/patric_phage_prot_headers.txt", stringsAsFactors = FALSE, header = FALSE)
-# combinePATRICBlast(blast_patric_filenames, header_prot, metadata_file, blast_patric_output)
-#
-# # Merge metaphlan2 output
-# taxa_filenames <- list.files("db/METAPHLAN/output_files", full.names = TRUE)
-# combineMetaphlanSamples(taxa_filenames, output_file = "db/METAPHLAN/metaphlan.csv")
+library(openxlsx)
 
 #### Read mapping data ####
 # Read non-subsampled mapping data
@@ -622,3 +581,36 @@ tiff("figures/Supplementary_Figure9.tiff", width = 5000, height = 5000, res = 40
 drawCorrelationHeatmap(high_cor_china_stool[high_cor_china_stool$phylum %in% phyla,], 150, 200, phyla = phyla)
 dev.off()
 
+#### Save source data ####
+# Use openxlsx instead?
+source_data = "SourceData.xlsx"
+source_datasets <- list(df_map_pb_saliva_class, df_map_pb_saliva_mech, df_map_pb_dental_class, 
+                        df_map_pb_dental_mech, df_map_pb_stool_class, df_map_pb_stool_mech, 
+                        df_map_sub_saliva, df_map_sub_dental, df_map_sub_stool, df_map_dup, mds, cluster_res,
+                        df_map_use, 
+                        df_map_pairs[df_map_pairs$group_mod %in% c("stool \nvs. dental", "stool \nvs. saliva", "stool \nvs. buccal mucosa", "stool \nvs. dorsum of tongue"),],
+                        df_map_pairs[df_map_pairs$group_mod %in% c("dorsum of tongue \nvs. buccal mucosa", "dorsum of tongue \nvs. dental", "buccal mucosa \nvs. dental"),],
+                        df_map_rel, df_map_rel_ind,
+                        df_map[df_map$Location == "China",], df_map[df_map$Location == "Fiji",],
+                        df_map[df_map$Location == "US",], df_map[df_map$Location == "Western Europe",],
+                        do.call("rbind", lapply(1:length(name), function(x) cbind(as.data.frame(results_list[[x]]), cohort = name[[x]]))),
+                        all_res, stool_saliva_dental_excl, df_map_subsampled_argrich_pairs,
+                        df_map_subsampled_argrich_pairs_noefflux,
+                        high_cor_china_saliva[high_cor_china_saliva$phylum %in% phyla,],
+                        high_cor_philippines_saliva[high_cor_philippines_saliva$phylum %in% phyla,],
+                        high_cor_china_stool[high_cor_china_stool$phylum %in% phyla,])
+
+sheet_names <- c(paste0("Figure1", c("a", "b", "c", "d", "e", "f")), 
+                 paste0("SupplementaryFigure1", c("a", "b", "c")),
+                 "SupplementaryFigure2", paste0("Figure2", c("a", "b", "c")),
+                 "Figure3a", "SupplementaryFigure3", "Figure3b", "SupplementaryFigure4",
+                 paste0("SupplementaryFigure5", c("a", "b", "c", "d")), "SupplementaryFigure6",
+                 "Figure3c", "SupplementaryFigure7", "Figure4", "SupplementaryFigure8", 
+                 paste0("Figure5", c("a", "b")), "SupplementaryFigure9")
+
+wb <- createWorkbook()
+for (i in 1:length(sheet_names)){
+  addWorksheet(wb, sheet_names[i])
+  writeData(wb, sheet = sheet_names[i], source_datasets[[i]])
+}
+saveWorkbook(wb, source_data, overwrite = TRUE)
