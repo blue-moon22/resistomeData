@@ -112,8 +112,21 @@ dev.off()
 top_col <- rev(brewer.pal(8, "Spectral"))
 coloured_labels <- c("stool" = top_col[1], "dorsum of tongue" = top_col[2], "buccal mucosa" = top_col[3], "dental" = top_col[4])
 
+# Select US longitudinal samples
+df_map_hmp <- df_map_dup[df_map_dup$Location == "US",]
+body_sites <- unique(df_map_hmp$sample_type)
+for(i in 1:length(body_sites)){
+  df_map_hmp_body_site <- df_map_hmp[df_map_hmp$sample_type == body_sites[i],]
+  df_samples_one <- unique(df_map_hmp_body_site$Sample.name[df_map_hmp_body_site$Visit_Number == 1])
+  df_samples_two <- unique(df_map_hmp_body_site$Sample.name[df_map_hmp_body_site$Visit_Number >= 2])
+  df_samples_rm <- df_samples_one[!(df_samples_one %in% df_samples_two)]
+  df_ids_rm <- df_map_hmp_body_site$ID[df_map_hmp_body_site$Sample.name %in% df_samples_rm &
+                                         df_map_hmp_body_site$sample_type == body_sites[i]]
+  df_map_hmp <- df_map_hmp[!(df_map_hmp$ID %in% df_ids_rm),]
+}
+
 tiff(filename = "figures/Supplementary_Figure2.tiff", width = 3000, height = 3000, res = 200)
-createUSDendrogram(df_map_dup, coloured_labels)
+createUSDendrogram(df_map_hmp, coloured_labels)
 dev.off()
 
 #### Figure 2a ####
@@ -586,7 +599,7 @@ dev.off()
 source_data = "Source Data.xlsx"
 source_datasets <- list(df_map_pb_saliva_class, df_map_pb_saliva_mech, df_map_pb_dental_class, 
                         df_map_pb_dental_mech, df_map_pb_stool_class, df_map_pb_stool_mech, 
-                        df_map_sub_saliva, df_map_sub_dental, df_map_sub_stool, df_map_dup, mds, cluster_res,
+                        df_map_sub_saliva, df_map_sub_dental, df_map_sub_stool, df_map_hmp, mds, cluster_res,
                         df_map_use, 
                         df_map_pairs[df_map_pairs$group_mod %in% c("stool \nvs. dental", "stool \nvs. saliva", "stool \nvs. buccal mucosa", "stool \nvs. dorsum of tongue"),],
                         df_map_pairs[df_map_pairs$group_mod %in% c("dorsum of tongue \nvs. buccal mucosa", "dorsum of tongue \nvs. dental", "buccal mucosa \nvs. dental"),],
@@ -599,6 +612,7 @@ source_datasets <- list(df_map_pb_saliva_class, df_map_pb_saliva_mech, df_map_pb
                         high_cor_china_saliva[high_cor_china_saliva$phylum %in% phyla,],
                         high_cor_philippines_saliva[high_cor_philippines_saliva$phylum %in% phyla,],
                         high_cor_china_stool[high_cor_china_stool$phylum %in% phyla,])
+#saveRDS(source_datasets, "source_data.RDS")
 
 sheet_names <- c(paste0("Figure1", c("a", "b", "c", "d", "e", "f")), 
                  paste0("SupplementaryFigure1", c("a", "b", "c")),
