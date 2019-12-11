@@ -29,82 +29,76 @@ df_map_sub_stool <- readMappingData("db/MAPPING_DATA/subsampled_stool_merged_bed
 
 #### Figure 1a ####
 # Select colours for graph
-cols <- c("white", "grey20", "grey50", "grey80", "black")
+cols <- c("white", "grey20", "grey40", "grey60", "grey80")
 names(cols) <- c("China", "Fiji", "Philippines", "Western Europe", "US")
 
 # Percentage saliva samples containing ARG class
-df_map_pb_saliva_class <- joinProportionAndBootstrap(df_map_sub_saliva, "Drug.Class", "saliva")
+df_map_pb_saliva_class <- joinProportionAndBootstrap(df_map_sub_saliva, "Drug.Class", B = 20)
 
 # Generate figure
 tiff(filename = "figures/Figure1a.tiff", width = 2200, height = 1000, res = 180)
-plotPercentages(df_map_pb_saliva_class, cols) + xlab("ARG class") + ylab("% saliva samples") +
-  theme(axis.title=element_text(size=18), legend.text = element_text(size=14), legend.title = element_text(size=18))
+plotPercentages(df_map_pb_saliva_class, cols) + xlab("ARG class") + ylab("% saliva samples")
 dev.off()
 
 #### Figure 1b ####
 # Percentage saliva samples containing ARG mechanism
-df_map_pb_saliva_mech <- joinProportionAndBootstrap(df_map_sub_saliva, "Resistance.Mechanism", "saliva")
+df_map_pb_saliva_mech <- joinProportionAndBootstrap(df_map_sub_saliva, "Resistance.Mechanism", B = 20)
 
 # Generate figure
 tiff(filename = "figures/Figure1b.tiff", width = 1000, height = 1000, res = 180)
-plotPercentages(df_map_pb_saliva_mech, cols) + xlab("ARG mechanism") + ylab("% saliva samples") +
-  theme(axis.title=element_text(size=18), legend.text = element_text(size=14), legend.title = element_text(size=18))
+plotPercentages(df_map_pb_saliva_mech, cols) + xlab("ARG mechanism") + ylab("% saliva samples")
 dev.off()
 
 #### Figure 1c ####
 # Percentage dental samples contraining ARG class
-df_map_pb_dental_class <- joinProportionAndBootstrap(df_map_sub_dental, "Drug.Class", "dental")
+df_map_pb_dental_class <- joinProportionAndBootstrap(df_map_sub_dental, "Drug.Class", B = 20)
 
 # Generate figure
 tiff(filename = "figures/Figure1c.tiff", width = 1250, height = 1000, res = 170)
-plotPercentages(df_map_pb_dental_class, cols) + xlab("ARG class") + ylab("% dental samples") +
-  theme(axis.title=element_text(size=18), legend.text = element_text(size=14), legend.title = element_text(size=18))
+plotPercentages(df_map_pb_dental_class, cols) + xlab("ARG class") + ylab("% dental samples")
 dev.off()
 
 #### Figure 1d ####
 # Percentage dental samples containing ARG mechanism
-df_map_pb_dental_mech <- joinProportionAndBootstrap(df_map_sub_dental, "Resistance.Mechanism", "dental")
+df_map_pb_dental_mech <- joinProportionAndBootstrap(df_map_sub_dental, "Resistance.Mechanism", B = 20)
 
 # Generate figure
 tiff(filename = "figures/Figure1d.tiff", width = 700, height = 1000, res = 180)
-plotPercentages(df_map_pb_dental_mech, cols) + xlab("ARG mechanism") + ylab("% dental samples") +
-  theme(axis.title=element_text(size=18), legend.text = element_text(size=14), legend.title = element_text(size=18))
+plotPercentages(df_map_pb_dental_mech, cols) + xlab("ARG mechanism") + ylab("% dental samples")
 dev.off()
 
 #### Figure 1e ####
 # Percentage stool samples contraining ARG class
-df_map_pb_stool_class <- joinProportionAndBootstrap(df_map_sub_stool, "Drug.Class", "stool")
+df_map_pb_stool_class <- joinProportionAndBootstrap(df_map_sub_stool, "Drug.Class", B = 20)
 
 # Generate figure
 tiff(filename = "figures/Figure1e.tiff", width = 2500, height = 1000, res = 170)
-plotPercentages(df_map_pb_stool_class, cols) + xlab("ARG class") + ylab("% stool samples") +
-  theme(axis.title=element_text(size=18), legend.text = element_text(size=14), legend.title = element_text(size=18))
+plotPercentages(df_map_pb_stool_class, cols) + xlab("ARG class") + ylab("% stool samples")
 dev.off()
 
 #### Figure 1f ####
 # Percentage stool samples containing ARG mechanism
-df_map_pb_stool_mech <- joinProportionAndBootstrap(df_map_sub_stool, "Resistance.Mechanism", "stool")
+df_map_pb_stool_mech <- joinProportionAndBootstrap(df_map_sub_stool, "Resistance.Mechanism", B = 20)
 
 # Generate figure
 tiff(filename = "figures/Figure1f.tiff", width = 1000, height = 1000, res = 180)
-plotPercentages(df_map_pb_stool_mech, cols) + xlab("ARG mechanism") + ylab("% stool samples") +
-  theme(axis.title=element_text(size=18), legend.text = element_text(size=14), legend.title = element_text(size=18))
+plotPercentages(df_map_pb_stool_mech, cols) + xlab("ARG mechanism") + ylab("% stool samples")
 dev.off()
 
 #### Supplementary Figure 1 ####
 # Draw core ARGs for saliva samples
 tiff("figures/Supplementary_Figure1a.tiff", width=2800, height=2400, res=150)
-drawCoreARGs(df_map_sub_saliva, "saliva", c(0.5, rep(1, 5), 0.5, rep(0, 4)), bar_label_size = 3, group_label_size = 3.8)
+drawCoreARGs(df_map_sub_saliva, c(0.5, rep(1, 5), 0.5, rep(0, 4)), bar_label_size = 3, group_label_size = 3.8, B = 20)
 dev.off()
 
 # Draw core ARGs for dental samples
 tiff("figures/Supplementary_Figure1b.tiff", width=1600, height=1200, res=150)
-drawCoreARGs(df_map_sub_dental, "dental", c(0.5, rep(1, 4), 0.5, rep(0, 3)), bar_label_size = 2.5, group_label_size = 2.5)
+drawCoreARGs(df_map_sub_dental, c(0.5, rep(1, 4), 0.5, rep(0, 3)), bar_label_size = 2.5, group_label_size = 2.5, B = 20)
 dev.off()
 
 # Draw core ARGs for stool samples
 tiff("figures/Supplementary_Figure1c.tiff", width=2500, height=2000, res=150)
-drawCoreARGs(df_map_sub_stool, "stool", c(0.5, rep(1, 5), 0.5, rep(0, 4)), bar_label_size = 3, group_label_size = 3)
+drawCoreARGs(df_map_sub_stool, c(0.5, rep(1, 5), 0.5, rep(0, 4)), bar_label_size = 3, group_label_size = 3, B = 20)
 dev.off()
 
 #### Supplementary Figure 2 ####
@@ -438,13 +432,14 @@ stool_dental_res$ARG <- gsub("regulates.*", "regulates efflux pump]", stool_dent
 stool_dental_res$comparison <- "dental vs. stool"
 
 all_res <- rbind(stool_saliva_res, stool_dental_res)
+all_res$ARG <- gsub(" \\[.*", "", all_res$ARG)
 
 tiff("figures/Figure3c.tiff", width = 2800, height = 1500, res = 250)
 ggplot(all_res, aes(ARG, abs(estimate), colour = sample_type)) +
   geom_point() +
   geom_errorbar(aes(ARG, ymin=abs(ci.lb), ymax = abs(ci.ub))) +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 80, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 80, hjust = 1, face="italic")) +
   ylab("Estimated average log2 fold change") +
   scale_colour_manual("Sample Type", values = brewer.pal(3,"Dark2")) +
   facet_grid(~comparison, scale = "free", space = "free")
@@ -471,11 +466,12 @@ stool_saliva_dental_excl$ARG <- gsub("part_of.*", "part of efflux pump complex]"
 stool_saliva_dental_excl$ARG <- gsub("regulates.*", "regulates efflux pump]", stool_saliva_dental_excl$ARG)
 
 # Plot results
+stool_saliva_dental_excl$ARG <- gsub(" \\[.*", "", stool_saliva_dental_excl$ARG)
 tiff("figures/Supplementary_Figure7.tiff", width = 5000, height = 1500, res = 250)
 ggplot(stool_saliva_dental_excl, aes(ARG, abs(log2FoldChange), colour = sample_type, shape = Location)) +
   geom_point() +
   theme_classic() +
-  theme(axis.text.x = element_text(angle = 80, hjust = 1)) +
+  theme(axis.text.x = element_text(angle = 80, hjust = 1, face = "italic")) +
   ylab("Log2 Fold Change") +
   scale_colour_manual("Sample Type", values = brewer.pal(3,"Dark2")) +
   scale_shape_manual("Only found in:", values = c(1,2,3,4)) +
@@ -581,7 +577,7 @@ dev.off()
 high_cor_philippines_saliva <- getSpearmanCorrelation(metaphlan_rpkm, ids = unique(df_map$ID[df_map$Location == "Philippines" & df_map$sample_type == "saliva"]), taxon_level = "t", taxon_ignore = "@@@")
 
 # Plot heatmap
-tiff("figures/Figure5b.tiff", width = 3500, height = 2300, res = 300)
+tiff("figures/Figure5b.tiff", width = 2500, height = 1800, res = 300)
 drawCorrelationHeatmap(high_cor_philippines_saliva[high_cor_philippines_saliva$phylum %in% phyla,], 150, phyla = phyla, left_margin = 60)
 dev.off()
 
@@ -590,7 +586,7 @@ dev.off()
 high_cor_china_stool <- getSpearmanCorrelation(metaphlan_rpkm, ids = unique(df_map$ID[df_map$Sample.name %in% china_sample_ids & df_map$sample_type == "stool"]), taxon_level = "t", taxon_ignore = "@@@")
 
 # Plot heatmap
-tiff("figures/Supplementary_Figure9.tiff", width = 5000, height = 5000, res = 400)
+tiff("figures/Supplementary_Figure9.tiff", width = 3000, height = 5000, res = 400)
 drawCorrelationHeatmap(high_cor_china_stool[high_cor_china_stool$phylum %in% phyla,], 150, 200, phyla = phyla)
 dev.off()
 
