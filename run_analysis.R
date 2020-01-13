@@ -30,7 +30,7 @@ df_map_sub_stool <- readMappingData("db/MAPPING_DATA/subsampled_stool_merged_bed
 #### Figure 1a ####
 # Select colours for graph
 cols <- c("white", "grey20", "grey40", "grey60", "grey80")
-names(cols) <- c("China", "Fiji", "Philippines", "Western Europe", "US")
+names(cols) <- c("China", "Fiji", "Philippines", "Western Europe", "USA")
 
 # Percentage saliva samples containing ARG class
 df_map_pb_saliva_class <- joinProportionAndBootstrap(df_map_sub_saliva, "Drug.Class", B = 20)
@@ -107,7 +107,7 @@ top_col <- rev(brewer.pal(8, "Spectral"))
 coloured_labels <- c("stool" = top_col[1], "dorsum of tongue" = top_col[2], "buccal mucosa" = top_col[3], "dental" = top_col[4])
 
 # Select US longitudinal samples
-df_map_hmp <- df_map_dup[df_map_dup$Location == "US",]
+df_map_hmp <- df_map_dup[df_map_dup$Location == "USA",]
 body_sites <- unique(df_map_hmp$sample_type)
 for(i in 1:length(body_sites)){
   df_map_hmp_body_site <- df_map_hmp[df_map_hmp$sample_type == body_sites[i],]
@@ -248,7 +248,7 @@ dev.off()
 
 #### Figure 3b ####
 # Get relative abundance for each country and sample type with more than one sample type
-df_map_rel <- getRelativeAbundance(df_map[df_map$Location %in% c("China", "US", "Fiji", "Western Europe"),])
+df_map_rel <- getRelativeAbundance(df_map[df_map$Location %in% c("China", "USA", "Fiji", "Western Europe"),])
 
 # Create muliple graphs of relative abundance
 uniq_location <- unique(df_map_rel$Location)
@@ -269,7 +269,7 @@ dev.off()
 
 #### Supplementary Figure 4 ####
 # Get individual relative abundance of ARGs by ARG class
-df_map_rel_ind <- getRelativeAbundanceIndividuals(df_map[df_map$Location %in% c("China", "US", "Fiji", "Western Europe"),])
+df_map_rel_ind <- getRelativeAbundanceIndividuals(df_map[df_map$Location %in% c("China", "USA", "Fiji", "Western Europe"),])
 
 # Create multiple plots of relative abundance
 uniq_location <- unique(df_map_rel_ind$Location)
@@ -314,7 +314,7 @@ top_col <- rev(brewer.pal(8, "Spectral"))
 col_vector <- c("stool" = top_col[1], "dorsum of tongue" = top_col[2], "buccal mucosa" = top_col[3], "dental" = top_col[4])
 
 tiff(filename = "figures/Supplementary_Figure5c.tiff", width = 3000, height = 1500, res = 300)
-createRPKMHeatmap(df_map_dup, "US", col_vector)
+createRPKMHeatmap(df_map_dup, "USA", col_vector)
 dev.off()
 
 #### Supplementary Figure 5d ####
@@ -328,7 +328,7 @@ dev.off()
 
 #### Supplementary Figure 6 ####
 list_deseq <- list(China = list(sample_type = c("saliva", "stool", "dental")),
-                   US = list(sample_type = c("stool", "buccal mucosa", "dorsum of tongue", "dental")),
+                   USA = list(sample_type = c("stool", "buccal mucosa", "dorsum of tongue", "dental")),
                    "Western Europe" = list(sample_type = c("saliva", "stool")),
                    Fiji = list(sample_type = c("saliva", "stool")))
 
@@ -342,7 +342,7 @@ for(i in 1:length(list_deseq)){
   for(k in 1:(length(list_deseq[[i]]$sample_type)-1)){
     for(l in (k+1):length(list_deseq[[i]]$sample_type)){
       count = count + 1
-      deseq_output <- runDESeq2(df_map[df_map$Location %in% c("China", "US", "Western Europe", "Fiji"),], Location = names(list_deseq[i]),
+      deseq_output <- runDESeq2(df_map[df_map$Location %in% c("China", "USA", "Western Europe", "Fiji"),], Location = names(list_deseq[i]),
                                 compare_samples = c(list_deseq[[i]]$sample_type[k], list_deseq[[i]]$sample_type[l]))
       results_list[[count]] <- deseq_output$results
       sample_comps[[count]] <- deseq_output$sample_comparison
@@ -364,7 +364,7 @@ sample_comps <- gsub("_", " ", gsub("\\.", " ", sample_comps))
 titles <- map2_chr(.x=locations, .y=sample_comps, .f = function(.x, .y) paste0(.x, "\n", .y))
 p <- list() # Print plots out individually and save in grob list
 for(i in 1:length(results_list)){
-  p[[i]] <- plotVolcano(results_list[[i]], df_map[df_map$Location %in% c("China", "US", "Western Europe", "Fiji"),], titles[i], class_colours, label_size = 3) +
+  p[[i]] <- plotVolcano(results_list[[i]], df_map[df_map$Location %in% c("China", "USA", "Western Europe", "Fiji"),], titles[i], class_colours, label_size = 3) +
     theme(legend.position = "none") + ylim(c(0,max(sapply(results_list, function(x) max(-log10(x$padj[x$padj < 0.05 & x$padj > 0 & abs(x$log2FoldChange) > 2]), na.rm = TRUE)))))
 }
 
@@ -601,7 +601,7 @@ source_datasets <- list(df_map_pb_saliva_class, df_map_pb_saliva_mech, df_map_pb
                         df_map_pairs[df_map_pairs$group_mod %in% c("dorsum of tongue \nvs. buccal mucosa", "dorsum of tongue \nvs. dental", "buccal mucosa \nvs. dental"),],
                         df_map_rel, df_map_rel_ind,
                         df_map[df_map$Location == "China",], df_map[df_map$Location == "Fiji",],
-                        df_map[df_map$Location == "US",], df_map[df_map$Location == "Western Europe",],
+                        df_map[df_map$Location == "USA",], df_map[df_map$Location == "Western Europe",],
                         do.call("rbind", lapply(1:length(name), function(x) cbind(as.data.frame(results_list[[x]]), cohort = name[[x]]))),
                         all_res, stool_saliva_dental_excl, df_map_subsampled_argrich_pairs,
                         df_map_subsampled_argrich_pairs_noefflux,
